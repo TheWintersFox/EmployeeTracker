@@ -1,19 +1,15 @@
-var inquirer = require("inquirer");
+const mysql = require('mysql');
+const inquirer = require("inquirer");
+const cTable = require("console.table");
 
+const connection = mysql.createConnection ({
+    host: 'localhost',
+    port: "8080",
+    user: 'root',
+    password: '',
+    database: 'employees',
+});
 
-
-const initialQuestion = [
-    {
-        type: "list",
-        name: "initialAction",
-        message: "Would you like to ADD, VIEW, or UPDATE?",
-        choices: [
-            "ADD department, role, employee",
-            "VIEW department, role, employee",
-            "UPDATE employee info"
-        ]
-    }
-];
 
 const addQuestion = [
     {
@@ -55,22 +51,46 @@ const updateQuestion = [
 ];
 
 function askInitialQuestion(){
-    inquirer.prompt(initialQuestion, function( answers ) {
+    inquirer.prompt(
+        {
+            type: "list",
+            name: "initialAction",
+            message: "Would you like to ADD, VIEW, or UPDATE?",
+            choices: [
+                "ADD department, role, employee",
+                "VIEW department, role, employee",
+                "UPDATE employee info"
+            ]
+        })
+        .then(answer => {
+            switch (answer.intialAction) {
+                case "ADD department, role, employee":
+                    askAddQuestion();
+                    break;
+                
+                case "VIEW department, role, employee":
+                    askViewQuestion();
+                    break;
+                
+                case "UPDATE employee info":
+                    askUpdateQuestion();
+                    break;
 
-        if (answers.initialAction === "ADD") {
-            askAddQuestion();
-        } else if ( answers.initialAction === "VIEW") {
-            askViewQuestion();
-        }   else if (answers.initialAction === "UPDATE") {
-            askUpateQuestion();
-        }
-    });
-}
+                case "EXIT":
+                    connection.end();
+                    break;
+            }
+        });
+    }    
 
 
 function askAddQuestion () {
-    inquirer.prompt (addQuestion)
+    inquirer.prompt (addQuestion, answers) {
+        
+    }
 }
+
+
 
 function askViewQuestion () {
     inquirer.prompt ()
