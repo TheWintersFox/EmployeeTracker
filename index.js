@@ -19,7 +19,7 @@ const addQuestion = [
 const viewQuestion = [
     {
         type: "list",
-        name: "view", 
+        name: "view",
         message: "Which would you like to view departments, roles, or employees?",
         choices: [
             "Departments",
@@ -32,7 +32,7 @@ const viewQuestion = [
 const updateQuestion = [
     {
         type: "confirm",
-        name: "update", 
+        name: "update",
         message: "Would you like to update an employees role?",
         choices: [
             "Departments",
@@ -43,7 +43,7 @@ const updateQuestion = [
 ];
 
 //
-function askInitialQuestion(){
+function askInitialQuestion() {
     inquirer.prompt(
         {
             type: "list",
@@ -61,11 +61,11 @@ function askInitialQuestion(){
                 console.error("Go into the then block");
                 askAddQuestion();
                 break;
-            
+
             // case "VIEW department, role, employee":
             //     askViewQuestion();
             //     break;
-            
+
             // case "UPDATE employee info":
             //     askUpdateQuestion();
             //     break;
@@ -75,49 +75,71 @@ function askInitialQuestion(){
                 break;
         }
     });
-}    
+}
 
 // case if the user chooses to add a department, role or employee
-function askAddQuestion () {
+function askAddQuestion() {
     inquirer.prompt(
         addQuestion
-    ) 
-    .then(answer => {
-        switch (answer.add) {
-            case "Department":
-                addDepartmentFromData();
-                break;
+    )
+        .then(answer => {
+            switch (answer.add) {
+                case "Department":
+                    addDepartmentFromData();
+                    break;
 
-            case "Role":
-                addRoleFromData();
-                break;
+                case "Role":
+                    addRoleFromData();
+                    break;
 
-            case "Employee":
-                addEmployeeFromData();
-                break;
-        }   
-    });
+                case "Employee":
+                    addEmployeeFromData();
+                    break;
+            }
+        });
 }
 
 const askForNameQuestion = {
-        type: "input",
-        name: "name",
-        message: "Choose a name."
+    type: "input",
+    name: "name",
+    message: "Choose a name."
 }
 const askForTitleQuestion = {
-        type: "input",
-        name: "title",
-        message: "Choose a title."
+    type: "input",
+    name: "title",
+    message: "Choose a title."
 }
 const askForSalaryQuestion = {
-        type: "input",
-        name: "salary",
-        message: "Choose a salary."
+    type: "input",
+    name: "salary",
+    message: "Choose a salary."
 }
 const askForDepartmentIdQuestion = {
-        type: "input",
-        name: "departmentId",
-        message: "Input a department_id."
+    type: "input",
+    name: "departmentId",
+    message: "Input a department_id."
+}
+
+const askForFirstNameQuestion = {
+    type: "input",
+    name: "first_name",
+    message: "What is the employee's first name?"
+}
+const askForLastNameQuestion = {
+    type: "input",
+    name: "last_name",
+    message: "What is the employee's last name?"
+}
+
+askForRoleQuestion = {
+    type: "input",
+    name: "role_id",
+    message: "What is the employee's role?"
+}
+askForManagerQuestion = {
+    type: "input",
+    name: "manager_id",
+    message: "Does the employee have a manager?"
 }
 
 //do something
@@ -134,9 +156,22 @@ function addRoleFromData() {
         askForTitleQuestion,
         askForSalaryQuestion,
         askForDepartmentIdQuestion
-    ]).then(answer => { 
+    ]).then(answer => {
         addRole(answer.title, answer.salary, answer.departmentId);
     })
+}
+
+//do something
+function addEmployeeFromData() {
+    inquirer.prompt([
+        askForFirstNameQuestion,
+        askForLastNameQuestion,
+        askForRoleQuestion,
+        askForManagerQuestion,
+    ]).then(answer => {
+        console.log(answer)
+        addEmployee(answer.first_name, answer.last_name, answer.role_id, answer.manager_id);
+    });
 }
 
 function addDepartment(name) {
@@ -169,26 +204,29 @@ function addRole(title, salary, departmentId) {
     );
 }
 
+
+function addEmployee(first_name, last_name, role_id, manager_id) {
+    const sql = "INSERT INTO `employee` (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+    db.query(
+        sql,
+        [first_name, last_name, role_id, manager_id],
+        err => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("You successfully added an Employee to the database!")
+            }
+        }
+    );
+}
+
 // TODO: write the add employee function
 // TODO: write this function addEmployeeFromData()
 // TODO: make sure add employee function works
+
+// makesure to enter 1 employee 
 // TODO: implement view functionality
-
-// function addEmployee(title, salary, departmentId) {
-//     const sql = "INSERT INTO `employeetracker.role` (title, salary, department_id) VALUES (?, ?, ?)";
-//     db.query(
-//         sql,
-//         [title, salary, departmentId],
-//         err => {
-//             if (err) {
-//                 console.log(err);
-//             }
-//         }
-//     );
-// }
-
-
-
+// TODO: make sure the integer lines up with role_id
 
 
 /////
@@ -196,11 +234,11 @@ function addRole(title, salary, departmentId) {
 
 
 
-function askViewQuestion () {
+function askViewQuestion() {
     inquirer.prompt()
 }
 
-function askUpateQuestion () {
+function askUpateQuestion() {
     inquirer.prompt()
 }
 
