@@ -1,21 +1,19 @@
-
-
-CREATE TABLE employeetracker.department (
+CREATE TABLE IF NOT EXISTS `employeetracker`.`department` (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(30) NOT NULL,
   PRIMARY KEY (id)
 );
 
-CREATE TABLE `employeetracker`.`role` (
+CREATE TABLE IF NOT EXISTS `employeetracker`.`role` (
 	id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(30) NOT NULL,
-    salary DECIMAL NOT NULL,
-    department_id INT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (department_id) REFERENCES department(id)
+  title VARCHAR(30) NOT NULL,
+  salary DECIMAL NOT NULL,
+  department_id INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
-CREATE TABLE `employeetracker`.`employee` (
+CREATE TABLE IF NOT EXISTS `employeetracker`.`employee` (
 	id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
