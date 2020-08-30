@@ -22,7 +22,7 @@ const viewQuestion = [
         name: "view",
         message: "Which would you like to view departments, roles, or employees?",
         choices: [
-            "Departments",
+            "Department",
             "Roles",
             "Employees"
         ]
@@ -62,9 +62,9 @@ function askInitialQuestion() {
                 askAddQuestion();
                 break;
 
-            // case "VIEW department, role, employee":
-            //     askViewQuestion();
-            //     break;
+            case "VIEW department, role, employee":
+                askViewQuestion();
+                break;
 
             // case "UPDATE employee info":
             //     askUpdateQuestion();
@@ -99,6 +99,27 @@ function askAddQuestion() {
         });
 }
 
+function askViewQuestion() {
+    inquirer.prompt(
+        viewQuestion
+    )
+        .then(answer => {
+            switch (answer) {
+                case "Department":
+                    viewDepartmentFromData();
+                    break;
+
+                case "Role":
+                    viewRoleFromData();
+                    break;
+
+                case "Employee":
+                    viewEmployeeFromData();
+                    break;
+            }
+        });
+}
+
 const askForNameQuestion = {
     type: "input",
     name: "name",
@@ -115,9 +136,10 @@ const askForSalaryQuestion = {
     message: "Choose a salary."
 }
 const askForDepartmentIdQuestion = {
-    type: "input",
+    type: "list",
     name: "departmentId",
-    message: "Input a department_id."
+    message: "Which department is the new role in?",
+    choices: ['Sales', 'Engineering', 'Finance', 'Legal']
 }
 
 const askForFirstNameQuestion = {
@@ -131,15 +153,17 @@ const askForLastNameQuestion = {
     message: "What is the employee's last name?"
 }
 
-askForRoleQuestion = {
-    type: "input",
+const askForRoleQuestion = {
+    type: "list",
     name: "role_id",
-    message: "What is the employee's role?"
+    message: "What department is the employee in",
+    choices: ['Sales', 'Engineering', 'Finance', 'Legal']
 }
-askForManagerQuestion = {
-    type: "input",
+const askForManagerQuestion = {
+    type: "list",
     name: "manager_id",
-    message: "Does the employee have a manager?"
+    message: "Does the employee have a manager, if so enter 1 for Mike Chan, enter 3 for Kevin Tupik, enter 5 for Malia Brown, enter 7 for Tom Allen",
+    choices: ['1', '3', '5', '7']
 }
 
 //do something
@@ -219,24 +243,36 @@ function addEmployee(first_name, last_name, role_id, manager_id) {
         }
     );
 }
+// View Departments
+    function viewDepartmentFromData() {
+        console.log("View Departments:");
+        connection.query("SELECT * FROM department", (err, res) => {
+            if (err) throw err;
+            console.table(res);
+        })
+    }
+  
+    // View Roles
+    function viewRoleFromData() {
+        console.log("View Roles:")
+        connection.query("SELECT * FROM role", (err, res) => {
+            if (err) throw err;
+            console.table(res);
+        })
+    }
 
-// TODO: write the add employee function
-// TODO: write this function addEmployeeFromData()
-// TODO: make sure add employee function works
-
-// makesure to enter 1 employee 
-// TODO: implement view functionality
-// TODO: make sure the integer lines up with role_id
-
-
-/////
+  // View Employees
+    function viewEmployeeFromData() {
+        console.log("View Roles:")
+        connection.query("SELECT * FROM employee", (err, res) => {
+            if (err) throw err;
+            console.table(res);
+        })
+    }
 
 
 
 
-function askViewQuestion() {
-    inquirer.prompt()
-}
 
 function askUpateQuestion() {
     inquirer.prompt()
