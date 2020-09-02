@@ -23,21 +23,8 @@ const viewQuestion = [
         message: "Which would you like to view departments, roles, or employees?",
         choices: [
             "Department",
-            "Roles",
-            "Employees"
-        ]
-    }
-];
-
-const updateQuestion = [
-    {
-        type: "confirm",
-        name: "update",
-        message: "Would you like to update an employees role?",
-        choices: [
-            "Departments",
-            "Roles",
-            "Employees"
+            "Role",
+            "Employee"
         ]
     }
 ];
@@ -66,9 +53,9 @@ function askInitialQuestion() {
                 askViewQuestion();
                 break;
 
-            // case "UPDATE employee info":
-            //     askUpdateQuestion();
-            //     break;
+            case "UPDATE employee info":
+                askUpdateQuestion();
+                break;
 
             case "EXIT":
                 db.end();
@@ -104,7 +91,7 @@ function askViewQuestion() {
         viewQuestion
     )
         .then(answer => {
-            switch (answer) {
+            switch (answer.view) {
                 case "Department":
                     viewDepartmentFromData();
                     break;
@@ -163,7 +150,7 @@ const askForManagerQuestion = {
     type: "list",
     name: "manager_id",
     message: "Does the employee have a manager, if so enter 1 for Mike Chan, enter 3 for Kevin Tupik, enter 5 for Malia Brown, enter 7 for Tom Allen",
-    choices: ['1', '3', '5', '7']
+    choices: [1, 3, 5, 7]
 }
 
 //do something
@@ -187,15 +174,31 @@ function addRoleFromData() {
 
 //do something
 function addEmployeeFromData() {
-    inquirer.prompt([
-        askForFirstNameQuestion,
-        askForLastNameQuestion,
-        askForRoleQuestion,
-        askForManagerQuestion,
-    ]).then(answer => {
-        console.log(answer)
-        addEmployee(answer.first_name, answer.last_name, answer.role_id, answer.manager_id);
-    });
+    db.query('SELECT * FROM role', (err, res) => {
+        if (err) throw err;
+
+        const roles = res.map(role => { 
+            return { name: role.title, value: role.id };
+        });
+
+        db.query('SELECT * FROM employee', (err, res) => {
+            const managers = res.map(manager => {
+                return { name: manager.first_name, value: manager.id }
+            });
+            managers.unshift({ name: 'None', value: null });
+
+            inquirer.prompt([
+                askForFirstNameQuestion,
+                askForLastNameQuestion,
+                { ...askForRoleQuestion, choices: roles },
+                { ...askForManagerQuestion, choices: managers},
+            ]).then(answer => {
+                console.log(answer)
+                addEmployee(answer.first_name, answer.last_name, answer.role_id, answer.manager_id);
+            });
+        });
+
+    })
 }
 
 function addDepartment(name) {
@@ -206,7 +209,9 @@ function addDepartment(name) {
         err => {
             if (err) {
                 console.log(err);
+
             }
+            askInitialQuestion();
         }
     );
 }
@@ -223,7 +228,9 @@ function addRole(title, salary, departmentId) {
                 } else {
                     console.log(err);
                 }
+
             }
+            askInitialQuestion();
         }
     );
 }
@@ -240,42 +247,78 @@ function addEmployee(first_name, last_name, role_id, manager_id) {
             } else {
                 console.log("You successfully added an Employee to the database!")
             }
+            askInitialQuestion();
         }
     );
 }
 // View Departments
-    function viewDepartmentFromData() {
-        console.log("View Departments:");
-        connection.query("SELECT * FROM department", (err, res) => {
-            if (err) throw err;
-            console.table(res);
-        })
-    }
-  
-    // View Roles
-    function viewRoleFromData() {
-        console.log("View Roles:")
-        connection.query("SELECT * FROM role", (err, res) => {
-            if (err) throw err;
-            console.table(res);
-        })
-    }
+function viewDepartmentFromData() {
+    console.log("View Departments:");
+    db.query("SELECT * FROM department", (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        askInitialQuestion();
+    })
+}
 
-  // View Employees
-    function viewEmployeeFromData() {
-        console.log("View Roles:")
-        connection.query("SELECT * FROM employee", (err, res) => {
-            if (err) throw err;
-            console.table(res);
-        })
-    }
+// View Roles
+function viewRoleFromData() {
+    console.log("View Roles:")
+    db.query("SELECT * FROM role", (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        askInitialQuestion();
+    })
+}
 
+// View Employees
+function viewEmployeeFromData() {
+    console.log("View Employees:")
+    db.query("SELECT * FROM employee", (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        askInitialQuestion();
+    })
+}
 
+function askUpdateQuestion() {
+    db.query("SELECT * FROM employee", (err, res) => {
+        if (err) throw err;
+        console.log('res', res)
 
-
-
-function askUpateQuestion() {
-    inquirer.prompt()
+        inquirer.prompt([
+            {
+                type: "list",
+                question: 'Which employee do you want to update?',
+                name: 'employeeId',
+                choices: res.map(employee => { 
+                    return { name: employee.first_name, value: employee.id };
+                }),
+            },
+            {
+                type: "list",
+                question: 'Which field do you want to update?',
+                name: 'colName',
+                choices: ['first_name', 'last_name'],
+            },
+            {
+                question: 'What value do you want to update to?',
+                type: "input",
+                name: 'colValue'
+            }
+        ]).then((answer) => {
+            db.query(
+                "UPDATE employee SET ??=? WHERE id = ?",
+                [answer.colName, answer.colValue, answer.employeeId],
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    askInitialQuestion();
+                }
+            );
+        });
+    });
 }
 
 
