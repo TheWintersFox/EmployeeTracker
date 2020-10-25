@@ -17,6 +17,7 @@ This project was designed for a company to be able to Add, View or Update fields
 # Installation
 Inquirer, Console.Table, MySQL
 # Usage
+https://drive.google.com/file/d/1vLz8b3I8cn2ubaQOsCCNGDKFB-KRa9op/view
 To use this application all the user needs to do is NPM I after copying the code from the repository, from there the user will then run "node index.js" in GITBash or terminal.  Follow the questions until you are finished adding new entries to the database.
 # Tests
 N/A (ATM)
